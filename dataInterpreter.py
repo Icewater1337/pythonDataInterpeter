@@ -17,7 +17,7 @@ def calculateHRVforFirstAndSecondIbi(folder):
     return hrv1,hrv2
 
 # Calculate one ibi
-epNbr = "01"
+epNbr = "04"
 baseFolder = "C:/Users/Icewater/Google Drive/uni/Informatik/MasterThesis/data/empatica_ep_"+epNbr+"/splitParts/"
 
 hrv1Calc, hrv2Calc = calculateHRVforFirstAndSecondIbi(baseFolder)

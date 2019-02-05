@@ -36,21 +36,22 @@ def calculateHRVforFirstAndSecondIbi(folder):
     return hrv1, hrv2
 
 def calculateHRVforFirstAndSecondIbiWithAlternativeIbi(folder):
-    onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
-    colnames = ['Time', 'IBI']
-    global hr_df_blue,hr_df_no_light, bvp_df_blue, bvp_df_no_light, hrv1, hrv2
-    for i in onlyfiles:
-        if "HRblue" in i:
-            hr_df_blue = pd.read_csv(folder+i)
-        if "HRnoLight" in i:
-            hr_df_no_light = pd.read_csv(folder + i)
-        if "BVPblue" in i:
-            bvp_df_blue = pd.read_csv(folder+i)
-        if "BVPnoLight" in i:
-            bvp_df_no_light = pd.read_csv(folder+i)
+    global hrv1, hrv2
 
-    hrv1 = hrvCalc.calculateRMSSDFromIbi(getIBIFromHRAndBVP(hr_df_no_light, bvp_df_no_light))
-    hrv2 = hrvCalc.calculateRMSSDFromIbi(getIBIFromHRAndBVP(hr_df_blue, bvp_df_blue))
+    onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+    colnames = ['IBI', 'Timestamp']
+    for i in onlyfiles:
+        if "OwnMade2IBIblue" in i:
+            ibiBlue = pd.read_csv(folder + i, names=colnames, header=0)
+            hrv2 = hrvCalc.calculateRMSSDFromIbi(ibiBlue)
+            #b, c = hrv2.iloc[0].copy(), hrv2.iloc[1].copy()
+            #hrv2.iloc[0], hrv2.iloc[1] = c, b
+
+        if "OwnMade1IBInoLight" in i:
+            ibiNoLight = pd.read_csv(folder + i, names=colnames, header=0)
+            hrv1 = hrvCalc.calculateRMSSDFromIbi(ibiNoLight)
+            #b, c = hrv1.iloc[0].copy(), hrv1.iloc[1].copy()
+            #hrv1.iloc[0], hrv1.iloc[1] = c, b
 
     return hrv1, hrv2
 
@@ -197,16 +198,16 @@ def getHRVAvgsAndTTest():
         # Read EDA
 
         if hrv1 > 0 and hrv2 > 0:
-            #if epNbr != 11 and epNbr != 13:
-            print("add: " + str(epNbr))
-            print(hrv1)
-            print(hrv2)
-            if epNbr % 2 == 0:
-                even = even + 1
-            if epNbr % 2 != 0:
-                uneven = uneven + 1
-            hrv_no_light.append(hrv1)
-            hrv_with_light.append(hrv2)
+            if epNbr != 11:#and epNbr != 13 and epNbr != 4
+                print("add: " + str(epNbr))
+                print(hrv1)
+                print(hrv2)
+                if epNbr % 2 == 0:
+                    even = even + 1
+                if epNbr % 2 != 0:
+                    uneven = uneven + 1
+                hrv_no_light.append(hrv1)
+                hrv_with_light.append(hrv2)
 
     # epNbr = "04"
 
@@ -257,8 +258,8 @@ def useOnlyPartOneFromTestGetHRV():
 
 
 
-print(useOnlyPartOneFromTestGetHRV())
-print(getEDAAvgsAndTTest())
+#print(useOnlyPartOneFromTestGetHRV())
+#print(getEDAAvgsAndTTest())
 print(getHRVAvgsAndTTest())
-print(getHRAvgAndTTest())
+#print(getHRAvgAndTTest())
 print("Done")
