@@ -19,10 +19,10 @@ def splitEpisode(episode, all_empatica_data, row, baseFolder):
     end_first_arr = [int(n) for n in row['EndFirst'].split(":")]
 
     if 5 < row['EP'] < 13:
-        start_first_arr[0] = start_first_arr[0]-1
-        end_first_arr[0] = end_first_arr[0]-1
-        start_second_arr[0] = start_second_arr[0]-1
-        end_second_arr[0] = end_second_arr[0]-1
+        start_first_arr[0] = start_first_arr[0] - 1
+        end_first_arr[0] = end_first_arr[0] - 1
+        start_second_arr[0] = start_second_arr[0] - 1
+        end_second_arr[0] = end_second_arr[0] - 1
 
     start_first = current_ep_start.replace(second=int(start_first_arr[2]), minute=int(start_first_arr[1]),
                                            hour=int(start_first_arr[0]))
@@ -35,23 +35,26 @@ def splitEpisode(episode, all_empatica_data, row, baseFolder):
     end_second = current_ep_start.replace(second=int(end_second_arr[2]), minute=int(end_second_arr[1]),
                                           hour=int(end_second_arr[0]))
 
+    df_timestamps.loc[row['EP']] = [row['EP'], time.mktime(start_first.timetuple()), time.mktime(end_first.timetuple()),
+                                    time.mktime(start_second.timetuple()), time.mktime(end_second.timetuple())]
+
     for key, value in current_ep.items():
         part1 = 'blue' if row['EP'] % 2 == 0 else 'noLight'
         part2 = 'noLight' if row['EP'] % 2 == 0 else 'blue'
-        #Split in experiment parts
+        # Split in experiment parts
         first_part = value.loc[np.logical_and(value.index > time.mktime(start_first.timetuple()),
                                               value.index < time.mktime(end_first.timetuple()))]
-        first_part.index.name="Timestamp"
+        first_part.index.name = "Timestamp"
         second_part = value.loc[np.logical_and(value.index > time.mktime(start_second.timetuple()),
                                                value.index < time.mktime(end_second.timetuple()))]
         second_part.index.name = "Timestamp"
 
         # create folder
-        if not os.path.exists(baseFolder+episode+"/splitParts/"):
-            os.makedirs(baseFolder+episode+"/splitParts/")
+        if not os.path.exists(baseFolder + episode + "/splitParts/"):
+            os.makedirs(baseFolder + episode + "/splitParts/")
         # Save to csv.
-        first_part.to_csv(baseFolder+episode+"/splitParts/1" +key + part1+".csv", index=True)
-        second_part.to_csv(baseFolder+episode+"/splitParts/2" +key + part2+".csv", index=True)
+        first_part.to_csv(baseFolder + episode + "/splitParts/1" + key + part1 + ".csv", index=True)
+        second_part.to_csv(baseFolder + episode + "/splitParts/2" + key + part2 + ".csv", index=True)
 
 
 # .strftime('%d-%m-%Y %H:%M:%S')
@@ -77,5 +80,9 @@ def splitALlFiles(baseFolder, allData):
         splitEpisode(epi, allData, row, baseFolder)
 
 
+columns = ['ep', 'start_first', 'end_first', 'start_second', 'end_second']
+df_timestamps = pd.DataFrame(columns=columns)
+
 bf = "C:/Users/Icewater/Google Drive/uni/Informatik/MasterThesis/data/"
 splitALlFiles(bf, getAllEmpaticaDataInFolder(bf))
+df_timestamps.to_csv(bf + 'timestampsUtc.csv', index=False)

@@ -12,6 +12,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import ttest_ind
 
+import empaticaHRV
+
 plotly.tools.set_credentials_file(username='Icewater1337', api_key='W7l3xKeSGXQ5oU5XTipP')
 
 epNbrs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18]
@@ -19,6 +21,7 @@ epNbrs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18]
 
 def calculateHRVforFirstAndSecondIbi(folder):
     global hrv1, hrv2
+
     onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
     colnames = ['Time', 'IBI']
     for i in onlyfiles:
@@ -31,6 +34,51 @@ def calculateHRVforFirstAndSecondIbi(folder):
             hrv1 = hrvCalc.calculateRMSSDFromIbi(ibiNoLight)
 
     return hrv1, hrv2
+
+def calculateHRVforFirstAndSecondIbiWithAlternativeIbi(folder):
+    onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+    colnames = ['Time', 'IBI']
+    global hr_df_blue,hr_df_no_light, bvp_df_blue, bvp_df_no_light, hrv1, hrv2
+    for i in onlyfiles:
+        if "HRblue" in i:
+            hr_df_blue = pd.read_csv(folder+i)
+        if "HRnoLight" in i:
+            hr_df_no_light = pd.read_csv(folder + i)
+        if "BVPblue" in i:
+            bvp_df_blue = pd.read_csv(folder+i)
+        if "BVPnoLight" in i:
+            bvp_df_no_light = pd.read_csv(folder+i)
+
+    hrv1 = hrvCalc.calculateRMSSDFromIbi(getIBIFromHRAndBVP(hr_df_no_light, bvp_df_no_light))
+    hrv2 = hrvCalc.calculateRMSSDFromIbi(getIBIFromHRAndBVP(hr_df_blue, bvp_df_blue))
+
+    return hrv1, hrv2
+
+
+def getIBIFromHRAndBVP(HR_DF, BVP_DF):
+    column = list(HR_DF)[0]
+    temp = HR_DF.drop(0, axis=0)
+    HR = temp[column]
+    HR = HR.tolist()
+
+    column2 = list(BVP_DF)[0]
+    sample_rate = BVP_DF[column2][0]
+    temp = BVP_DF.drop(0, axis=0)
+    temp['spData'] = 0
+    temp.loc[temp[column2] > 0, 'spData'] = temp[column2]
+    signal = temp['spData'].tolist()
+
+    return empaticaHRV.getRRI(signal, column2, sample_rate)
+
+def calculateHRVWithFirstTest(folder):
+    global hrv1
+    onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+    colnames = ['Time', 'IBI']
+    for i in onlyfiles:
+        if "1IBI" in i:
+            ibi = pd.read_csv(folder + i, names=colnames, header=0)
+            hrv1 = hrvCalc.calculateRMSSDFromIbi(ibi)
+    return hrv1
 
 
 def getEDA(folder):
@@ -143,21 +191,22 @@ def getHRVAvgsAndTTest():
 
         baseFolder = "C:/Users/Icewater/Google Drive/uni/Informatik/MasterThesis/data/empatica_ep_" + str(epNbr).zfill(
             2) + "/splitParts/"
-        hrv1, hrv2 = calculateHRVforFirstAndSecondIbi(baseFolder)
+        #hrv1, hrv2 = calculateHRVforFirstAndSecondIbi(baseFolder)
+        hrv1, hrv2 = calculateHRVforFirstAndSecondIbiWithAlternativeIbi(baseFolder)
 
         # Read EDA
 
         if hrv1 > 0 and hrv2 > 0:
-            if epNbr != 11 and epNbr != 13:
-                print("add: " + str(epNbr))
-                print(hrv1)
-                print(hrv2)
-                if epNbr % 2 == 0:
-                    even = even + 1
-                if epNbr % 2 != 0:
-                    uneven = uneven + 1
-                hrv_no_light.append(hrv1)
-                hrv_with_light.append(hrv2)
+            #if epNbr != 11 and epNbr != 13:
+            print("add: " + str(epNbr))
+            print(hrv1)
+            print(hrv2)
+            if epNbr % 2 == 0:
+                even = even + 1
+            if epNbr % 2 != 0:
+                uneven = uneven + 1
+            hrv_no_light.append(hrv1)
+            hrv_with_light.append(hrv2)
 
     # epNbr = "04"
 
@@ -170,6 +219,45 @@ def getHRVAvgsAndTTest():
     return ttest_ind(hrv_no_light, hrv_with_light)
 
 
+def useOnlyPartOneFromTestGetHRV():
+    hrv_no_light = []
+    hrv_with_light = []
+    # Calculate one ibi
+    even = 0
+    uneven = 0
+    for epNbr in epNbrs:
+
+        baseFolder = "C:/Users/Icewater/Google Drive/uni/Informatik/MasterThesis/data/empatica_ep_" + str(epNbr).zfill(
+            2) + "/splitParts/"
+        hrv = calculateHRVWithFirstTest(baseFolder)
+
+        # Read EDA
+
+        if hrv > 0:
+            #if epNbr != 11 and epNbr != 13:
+            print("add: " + str(epNbr))
+            print(hrv)
+            if epNbr % 2 == 0:
+                even = even + 1
+                hrv_with_light.append(hrv)
+            if epNbr % 2 != 0:
+                uneven = uneven + 1
+                hrv_no_light.append(hrv)
+
+
+    # epNbr = "04"
+
+    print("Uneven:" + str(uneven))
+    print("even:" + str(even))
+
+    print("Average With light:" + str(np.average(hrv_with_light)))
+    print("Average Without light:" + str(np.average(hrv_no_light)))
+
+    return ttest_ind(hrv_no_light, hrv_with_light)
+
+
+
+print(useOnlyPartOneFromTestGetHRV())
 print(getEDAAvgsAndTTest())
 print(getHRVAvgsAndTTest())
 print(getHRAvgAndTTest())
