@@ -5,6 +5,7 @@ baseFolder = "C:/Users/Icewater/Google Drive/uni/Informatik/MasterThesis/data/"
 
 pss_plotter = PssPlotsCreator(baseFolder)
 print("Start")
+pss_plotter.createBlueLightPieChart()
 pss_plotter.createPlot("first", "stress")
 pss_plotter.createPlot("second", "stress")
 pss_plotter.createPlot("all", "stress")

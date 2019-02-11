@@ -176,6 +176,33 @@ class PssPlotsCreator:
         return adjusted_after_light_df, adjusted_after_no_light_df
 
 
+    # Creates piechart plot of the BlueLight questions
+    def createBlueLightPieChart(self):
+        calming = self.after_blue_light_df['calming']
+        helpful = self.after_blue_light_df['helpful']
+
+        labels_calming = Counter(calming).keys()
+        labels_helpful = Counter(helpful).keys()
+        values_calming = Counter(calming).values()
+        values_helpful = Counter(helpful).values()
+        colors_calming = ['lightcoral', 'blue', 'red', 'grey']
+        colors_helpful = ['blue', 'red', 'grey']
+
+        # Plot 1
+        plt.pie(values_calming, labels=labels_calming, colors=colors_calming,
+                autopct='%1.1f%%', shadow=True, startangle=140)
+
+        plt.axis('equal')
+        plt.savefig(self.baseFolder + "calming.png")
+
+        # Plot2
+        plt.clf()
+        plt.pie(values_helpful, labels=labels_helpful, colors=colors_helpful,
+                autopct='%1.1f%%', shadow=True, startangle=140)
+
+        plt.axis('equal')
+        plt.savefig(self.baseFolder + "helpful.png")
+
     #Creates a plot of all experiment data and plots the three averages
     def createAveragesPlot(self):
         # Create averages plot
