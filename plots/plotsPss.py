@@ -31,103 +31,113 @@ def fill_with_zero(array):
 
 
 
-stress_before = fill_with_zero(np.bincount(np.asarray(before_df['stress']).astype(int)))
-stress_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['stress']).astype(int)))
-stress_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['stress']).astype(int)))
+def createStressPlot():
+    stress_before = fill_with_zero(np.bincount(np.asarray(before_df['stress']).astype(int)))
+    stress_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['stress']).astype(int)))
+    stress_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['stress']).astype(int)))
 
-tension_before = fill_with_zero(np.bincount(np.asarray(before_df['tension']).astype(int)))
-tension_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['tension']).astype(int)))
-tension_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['tension']).astype(int)))
+    y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-concentration_before = fill_with_zero(np.bincount(np.asarray(before_df['concentration']).astype(int)))
-concentration_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['concentration']).astype(int)))
-concentration_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['concentration']).astype(int)))
+    ind = np.arange(0, 2 * len(y), 2)  # the x locations for the groups
+    width = 0.35  # the width of the bars
 
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(ind - width, stress_before, width,
+                    color='Grey', label='Before')
+    rects2 = ax.bar(ind, stress_after_no, width,
+                    color='Red', label='After No light')
+    rects3 = ax.bar(ind + width, stress_after_blue, width,
+                    color='Blue', label='After blue light')
 
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_ylabel('#Of people with that score')
+    ax.set_title('Stress scores comparison for the three parts')
+    ax.set_xticks(ind)
+    ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
+    ax.legend()
 
-y = [1,2,3,4,5,6,7,8,9,10]
+    plt.savefig(baseFolder + "stress.png")
 
-ind = np.arange(0, 2*len(y), 2)  # the x locations for the groups
-width = 0.35  # the width of the bars
+def createTensionPlot():
+    y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-fig, ax = plt.subplots()
-rects1 = ax.bar(ind - width, stress_before, width,
-                color='Grey', label='Before')
-rects2 = ax.bar(ind, stress_after_no, width,
-                color='Red', label='After No light')
-rects3 = ax.bar(ind + width, stress_after_blue, width,
-                color='Blue', label='After blue light')
+    ind = np.arange(0, 2 * len(y), 2)
+    tension_before = fill_with_zero(np.bincount(np.asarray(before_df['tension']).astype(int)))
+    tension_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['tension']).astype(int)))
+    tension_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['tension']).astype(int)))
 
-# Add some text for labels, title and custom x-axis tick labels, etc.
-ax.set_ylabel('#Of people with that score')
-ax.set_title('Stress scores comparison for the three parts')
-ax.set_xticks(ind)
-ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
-ax.legend()
-
-plt.savefig(baseFolder+"stress.png")
-
-# create plot for tension
+    # create plot for tension
 
 
-fig1, ax1 = plt.subplots()
-tension_rects1 = ax1.bar(ind - width, tension_before, width,
-                color='Grey', label='Before')
-tension_rects2 = ax1.bar(ind, tension_after_no, width,
-                color='Red', label='After No light')
-tension_rects3 = ax1.bar(ind + width, tension_after_blue, width,
-                color='Blue', label='After blue light')
+    fig1, ax1 = plt.subplots()
+    tension_rects1 = ax1.bar(ind - width, tension_before, width,
+                             color='Grey', label='Before')
+    tension_rects2 = ax1.bar(ind, tension_after_no, width,
+                             color='Red', label='After No light')
+    tension_rects3 = ax1.bar(ind + width, tension_after_blue, width,
+                             color='Blue', label='After blue light')
 
-# Add some text for labels, title and custom x-axis tick labels, etc.
-ax1.set_ylabel('#Of people with that score')
-ax1.set_title('Tension scores comparison for the three parts')
-ax1.set_xticks(ind)
-ax1.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
-ax1.legend()
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax1.set_ylabel('#Of people with that score')
+    ax1.set_title('Tension scores comparison for the three parts')
+    ax1.set_xticks(ind)
+    ax1.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
+    ax1.legend()
 
-plt.savefig(baseFolder+"tension.png")
+    plt.savefig(baseFolder + "tension.png")
 
-# crete concentration plot
-fig2, ax2 = plt.subplots()
-concentration_rects1 = ax2.bar(ind - width, concentration_before, width,
-                color='Grey', label='Before')
-concentration_rects2 = ax2.bar(ind, concentration_after_no, width,
-                color='Red', label='After No light')
-concentration_rects3 = ax2.bar(ind + width, concentration_after_blue, width,
-                color='Blue', label='After blue light')
+def createConcentrationPlot():
+    y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-# Add some text for labels, title and custom x-axis tick labels, etc.
-ax2.set_ylabel('#Of people with that score')
-ax2.set_title('Concentration scores comparison for the three parts')
-ax2.set_xticks(ind)
-ax2.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
-ax2.legend()
+    ind = np.arange(0, 2 * len(y), 2)
 
-plt.savefig(baseFolder+"concentration.png")
 
-# Create averages plot
-zz = [1,2,3]
+    concentration_before = fill_with_zero(np.bincount(np.asarray(before_df['concentration']).astype(int)))
+    concentration_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['concentration']).astype(int)))
+    concentration_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['concentration']).astype(int)))
 
-ind = np.arange(0, 2*len(zz), 2)  # the x locations for the groups
-width = 0.5  # the width of the bars
+    # crete concentration plot
+    fig2, ax2 = plt.subplots()
+    concentration_rects1 = ax2.bar(ind - width, concentration_before, width,
+                                   color='Grey', label='Before')
+    concentration_rects2 = ax2.bar(ind, concentration_after_no, width,
+                                   color='Red', label='After No light')
+    concentration_rects3 = ax2.bar(ind + width, concentration_after_blue, width,
+                                   color='Blue', label='After blue light')
 
-avgs_before = [np.median(before_df['stress']),np.median(before_df['tension']),np.median(before_df['concentration'])]
-avgs_after_no = [np.median(after_no_light_df['stress']),np.median(after_no_light_df['tension']),np.median(after_no_light_df['concentration'])]
-avgs_after_blue = [np.median(after_blue_light_df['stress']),np.median(after_blue_light_df['tension']),np.median(after_blue_light_df['concentration'])]
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax2.set_ylabel('#Of people with that score')
+    ax2.set_title('Concentration scores comparison for the three parts')
+    ax2.set_xticks(ind)
+    ax2.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
+    ax2.legend()
 
-fig_avg, ax_avg = plt.subplots()
-avg_rects1 = ax_avg.bar(ind - width, avgs_before, width,
-                color='Grey', label='Before')
-avg_rects2 = ax_avg.bar(ind, avgs_after_no, width,
-                color='Red', label='After No light')
-avg_rects3 = ax_avg.bar(ind + width, avgs_after_blue, width,
-                color='Blue', label='After blue light')
+    plt.savefig(baseFolder + "concentration.png")
 
-# Add some text for labels, title and custom x-axis tick labels, etc.
-ax_avg.set_ylabel('Median score over all participants')
-ax_avg.set_title('Median scores for stress, tension and concentration')
-ax_avg.set_xticks(ind)
-ax_avg.set_xticklabels(('Stress', 'Tension', 'Concentration'))
-ax_avg.legend()
+def createAveragesPlot():
+     # Create averages plot
+    zz = [1,2,3]
 
-plt.savefig(baseFolder+"medianPlot.png")
+    ind = np.arange(0, 2*len(zz), 2)  # the x locations for the groups
+    width = 0.5  # the width of the bars
+
+    avgs_before = [np.average(before_df['stress']),np.average(before_df['tension']),np.average(before_df['concentration'])]
+    avgs_after_no = [np.average(after_no_light_df['stress']),np.average(after_no_light_df['tension']),np.average(after_no_light_df['concentration'])]
+    avgs_after_blue = [np.average(after_blue_light_df['stress']),np.average(after_blue_light_df['tension']),np.average(after_blue_light_df['concentration'])]
+
+    fig_avg, ax_avg = plt.subplots()
+    avg_rects1 = ax_avg.bar(ind - width, avgs_before, width,
+                    color='Grey', label='Before')
+    avg_rects2 = ax_avg.bar(ind, avgs_after_no, width,
+                    color='Red', label='After No light')
+    avg_rects3 = ax_avg.bar(ind + width, avgs_after_blue, width,
+                    color='Blue', label='After blue light')
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax_avg.set_ylabel('Average score over all participants')
+    ax_avg.set_title('Average scores for stress, tension and concentration')
+    ax_avg.set_xticks(ind)
+    ax_avg.set_xticklabels(('Stress', 'Tension', 'Concentration'))
+    ax_avg.legend()
+
+    plt.savefig(baseFolder+"averagePlot.png")

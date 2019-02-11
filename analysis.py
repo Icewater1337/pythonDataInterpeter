@@ -124,7 +124,7 @@ def getHRAvgAndTTest():
 
 
         if ( hr1Avg > 0 and hr2Avg > 0 ):
-            if epNbr != 11 and epNbr != 13 and epNbr != 4:
+            if epNbr != 11 and epNbr != 12 and epNbr != 13 and epNbr != 18 and epNbr != 7:
                 if epNbr % 2 == 0:
                     even = even + 1
                 if epNbr % 2 != 0:
@@ -160,16 +160,16 @@ def getEDAAvgsAndTTest():
 
 
         if ( eda1Avg > 0 and eda2Avg > 0 ):
-            if epNbr != 11:# and epNbr != 13 and epNbr != 4:
+            if epNbr != 11 and epNbr != 12 and epNbr != 13 and epNbr != 18 and epNbr != 7:# and epNbr != 13 and epNbr != 4:
                 if epNbr % 2 == 0:
                     even = even + 1
                 if epNbr % 2 != 0:
                     uneven = uneven + 1
-                #print("Add EP: " + str(epNbr))
+                print("Add EP: " + str(epNbr))
                 normalizedEda1 = (eda1['EDA']- np.min(eda1['EDA'])) / (np.max(eda1['EDA'])-np.min(eda1['EDA']))
                 normalizedEda2 = (eda2['EDA']- np.min(eda2['EDA'])) / (np.max(eda2['EDA'])-np.min(eda2['EDA']))
-                #print("Avg No Light: " + str(np.average(normalizedEda1)))
-                #print("Avg With Light: " + str(np.average(normalizedEda2)))
+                print("Avg No Light: " + str(np.average(normalizedEda1)))
+                print("Avg With Light: " + str(np.average(normalizedEda2)))
                 eda_no_light.append(np.average((normalizedEda1)))
                 eda_with_light.append(np.average((normalizedEda2)))
 
@@ -198,7 +198,7 @@ def getHRVAvgsAndTTest():
         # Read EDA
 
         if hrv1 > 0 and hrv2 > 0:
-            if epNbr != 11:#and epNbr != 13 and epNbr != 4
+            if epNbr != 11 and epNbr != 12 and epNbr != 13 and epNbr != 18 and epNbr != 7:
                # print("add: " + str(epNbr))
                # print(hrv1)
                # print(hrv2)
@@ -211,8 +211,8 @@ def getHRVAvgsAndTTest():
 
     # epNbr = "04"
 
-    print("Uneven:" + str(uneven))
-    print("even:" + str(even))
+    print("Uneven:" + str(len(hrv_no_light)))
+    print("even:" + str(len(hrv_with_light)))
 
     print("Average With light:" + str(np.average(hrv_with_light)))
     print("Average Without light:" + str(np.average(hrv_no_light)))
@@ -259,7 +259,7 @@ def useOnlyPartOneFromTestGetHRV():
 
 
 #print(useOnlyPartOneFromTestGetHRV())
-print(getEDAAvgsAndTTest())
-print(getHRVAvgsAndTTest())
+#print(getEDAAvgsAndTTest())
+#print(getHRVAvgsAndTTest())
 print(getHRAvgAndTTest())
 print("Done")
