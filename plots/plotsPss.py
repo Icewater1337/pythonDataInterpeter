@@ -60,6 +60,7 @@ def createStressPlot():
 
 def createTensionPlot():
     y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    width = 0.35  # the width of the bars
 
     ind = np.arange(0, 2 * len(y), 2)
     tension_before = fill_with_zero(np.bincount(np.asarray(before_df['tension']).astype(int)))
@@ -91,6 +92,7 @@ def createConcentrationPlot():
 
     ind = np.arange(0, 2 * len(y), 2)
 
+    width = 0.35  # the width of the bars
 
     concentration_before = fill_with_zero(np.bincount(np.asarray(before_df['concentration']).astype(int)))
     concentration_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['concentration']).astype(int)))
