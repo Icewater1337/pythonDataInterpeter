@@ -54,9 +54,10 @@ def createEmotionsPlot():
          'happy', 'relaxed', 'upset', 'elated'])
 
     count_before_labels, counter_before_values = get_full_list_of_frequencies(all_emotions, Counter(word_list_before))
-    count_after_no_light_labels, count_after_no_light_values = get_full_list_of_frequencies(all_emotions, Counter(word_list_after_no_light))
-    count_after_light_labels, count_after_light_values = get_full_list_of_frequencies(all_emotions, Counter(word_list_after_light))
-
+    count_after_no_light_labels, count_after_no_light_values = get_full_list_of_frequencies(all_emotions, Counter(
+        word_list_after_no_light))
+    count_after_light_labels, count_after_light_values = get_full_list_of_frequencies(all_emotions,
+                                                                                      Counter(word_list_after_light))
 
     ind = np.arange(0, 2 * len(all_emotions), 2)  # the x locations for the groups
     width = 0.35  # the width of the bars
@@ -80,9 +81,9 @@ def createEmotionsPlot():
 
 
 def createStressPlot():
-    stress_before = fill_with_zero(np.bincount(np.asarray(before_df['stress']).astype(int)),10)
-    stress_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['stress']).astype(int)),10)
-    stress_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['stress']).astype(int)),10)
+    stress_before = fill_with_zero(np.bincount(np.asarray(before_df['stress']).astype(int)), 10)
+    stress_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['stress']).astype(int)), 10)
+    stress_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['stress']).astype(int)), 10)
 
     y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -107,14 +108,68 @@ def createStressPlot():
     plt.savefig(baseFolder + "stress.png")
 
 
+def createPlot(subset, type):
+    if type != "stress" and type != "tension" and type != "concentration":
+        raise ValueError('Variable type has to be stress, tension or concentration. Yours was: ' + type)
+    if subset != "first" and subset != "second" and subset != "all":
+        raise ValueError('Variable subset has to be first, second or all. Yours was: ' + subset)
+    if subset == "first":
+        adjusted_after_no_light_df = after_no_light_df.loc[after_no_light_df['participant'].astype(int) % 2 == 1]
+        adjusted_after_light_df = after_blue_light_df.loc[after_blue_light_df['participant'].astype(int) % 2 == 0]
+    elif subset == "second":
+        adjusted_after_no_light_df = after_no_light_df.loc[after_no_light_df['participant'].astype(int) % 2 == 0]
+        adjusted_after_light_df = after_blue_light_df.loc[after_blue_light_df['participant'].astype(int) % 2 == 1]
+    else:
+        adjusted_after_no_light_df = after_no_light_df
+        adjusted_after_light_df = after_blue_light_df
+
+    before = fill_with_zero(np.bincount(np.asarray(before_df[type]).astype(int)), 10)
+    after_no = fill_with_zero(np.bincount(np.asarray(adjusted_after_no_light_df[type]).astype(int)), 10)
+    after_blue = fill_with_zero(np.bincount(np.asarray(adjusted_after_light_df[type]).astype(int)), 10)
+
+    y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    ind = np.arange(0, 2 * len(y), 2)  # the x locations for the groups
+    width = 0.5  # the width of the bars
+
+    fig, ax = plt.subplots()
+    if subset == "all":
+        rects1 = ax.bar(ind - width, before, width,
+                        color='Grey', label='Before')
+        rects2 = ax.bar(ind, after_no, width,
+                        color='Red', label='After no light')
+        rects3 = ax.bar(ind + width, after_blue, width,
+                        color='Blue', label='After blue light')
+    if subset == "first" or subset == "second":
+        rects2 = ax.bar(ind - width / 2, after_no, width,
+                        color='Red', label='After no light')
+        rects3 = ax.bar(ind + width / 2, after_blue, width,
+                        color='Blue', label='After blue light')
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_ylabel('#Of people with that score')
+    if subset == "all":
+        ax.set_title(type + ' scores comparison of all experiment data')
+    elif subset == "first":
+        ax.set_title(type + ' scores comparison of only the first MAT')
+    elif subset == "second":
+        ax.set_title(type + ' scores comparison of only the second MAT')
+
+    ax.set_xticks(ind)
+    ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
+    ax.legend()
+
+    plt.savefig(baseFolder + subset + type + ".png")
+
+
 def createTensionPlot():
     y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     width = 0.35  # the width of the bars
 
     ind = np.arange(0, 2 * len(y), 2)
-    tension_before = fill_with_zero(np.bincount(np.asarray(before_df['tension']).astype(int)),10)
-    tension_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['tension']).astype(int)),10)
-    tension_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['tension']).astype(int)),10)
+    tension_before = fill_with_zero(np.bincount(np.asarray(before_df['tension']).astype(int)), 10)
+    tension_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['tension']).astype(int)), 10)
+    tension_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['tension']).astype(int)), 10)
 
     # create plot for tension
 
@@ -144,9 +199,10 @@ def createConcentrationPlot():
 
     width = 0.35  # the width of the bars
 
-    concentration_before = fill_with_zero(np.bincount(np.asarray(before_df['concentration']).astype(int)),10)
-    concentration_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['concentration']).astype(int)),10)
-    concentration_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['concentration']).astype(int)),10)
+    concentration_before = fill_with_zero(np.bincount(np.asarray(before_df['concentration']).astype(int)), 10)
+    concentration_after_no = fill_with_zero(np.bincount(np.asarray(after_no_light_df['concentration']).astype(int)), 10)
+    concentration_after_blue = fill_with_zero(np.bincount(np.asarray(after_blue_light_df['concentration']).astype(int)),
+                                              10)
 
     # crete concentration plot
     fig2, ax2 = plt.subplots()
@@ -198,9 +254,19 @@ def createAveragesPlot():
 
     plt.savefig(baseFolder + "averagePlot.png")  # Preload things
 
-createEmotionsPlot()
 
-#createAveragesPlot()
-#createConcentrationPlot()
-#createStressPlot()
-#createTensionPlot()
+# createEmotionsPlot()
+
+# createAveragesPlot()
+# createConcentrationPlot()
+# createStressPlot()
+createPlot("first", "stress")
+createPlot("second", "stress")
+createPlot("all", "stress")
+createPlot("first", "concentration")
+createPlot("second", "concentration")
+createPlot("all", "concentration")
+createPlot("first", "tension")
+createPlot("second", "tension")
+createPlot("all", "tension")
+# createTensionPlot()
