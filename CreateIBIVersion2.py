@@ -1,9 +1,14 @@
 import os
-import pandas as pd
-import empaticaHRV
-import numpy as np
 
-def getAllEmpaticaDataInFolder(baseFolder):
+import numpy as np
+import pandas as pd
+
+from downloadedUtils import empaticaHRV
+
+# This class takes the bvp and hr and calculates the ibi for it
+# Also splits it in the parts for first and second eperiment
+
+def getAllEmpaticaDataInFolder( baseFolder):
     all_empatica_data = {}
     # GO through all the folders taht contain empatica
     for directory in [x[0] for x in os.walk(baseFolder)]:
@@ -15,7 +20,7 @@ def getAllEmpaticaDataInFolder(baseFolder):
 
     return all_empatica_data
 
-def splitALlFiles(baseFolder, allData):
+def splitALlFiles( baseFolder, allData):
     timestamps = pd.read_csv(baseFolder + 'timestampsUtc.csv', header=0, delimiter=',')
 
     # Loop through all dicts and split all at the given timestamps
@@ -25,7 +30,7 @@ def splitALlFiles(baseFolder, allData):
         splitAndSaveToCsv(allData[epi]['HR'], allData[epi]['BVP'], row, baseFolder)
 
 
-def splitAndSaveToCsv(HR_DF, BVP_DF,timestamp, baseFolder):
+def splitAndSaveToCsv( HR_DF, BVP_DF,timestamp, baseFolder):
     column = list(HR_DF)[0]
     temp = HR_DF.drop(0, axis=0)
     HR = temp[column]
@@ -49,9 +54,7 @@ def splitAndSaveToCsv(HR_DF, BVP_DF,timestamp, baseFolder):
     second_part = RRI_DF.loc[np.logical_and(RRI_DF['Timestamp'] > timestamp['start_second'],
                                             RRI_DF['Timestamp'] <timestamp['end_second'] )]
 
-    first_part.to_csv(baseFolder + episode_str + "/splitParts/OwnMade1IBI" + part1 + ".csv", index=False)
-    second_part.to_csv(baseFolder + episode_str + "/splitParts/OwnMade2IBI"+ part2 + ".csv", index=False)
+    first_part.to_csv(baseFolder + episode_str + "/splitParts/1IBI" + part1 + ".csv", index=False)
+    second_part.to_csv(baseFolder + episode_str + "/splitParts/2IBI"+ part2 + ".csv", index=False)
 
-bf = "C:/Users/Icewater/Google Drive/uni/Informatik/MasterThesis/data/"
-all_data = getAllEmpaticaDataInFolder(bf)
-splitALlFiles(bf, all_data)
+

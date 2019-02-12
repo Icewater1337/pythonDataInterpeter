@@ -6,7 +6,7 @@ import RMSSDHRVCalc as hrvCalc
 
 
 def calculateHRVforFirstAndSecondIbi(folder):
-    colnames=['Time','IBI']
+    colnames=['IBI','Time']
     ibi1 = pd.read_csv(folder+'1IBInoLight.csv', names=colnames, header=0)
     ibi2 = pd.read_csv(folder+'2IBIblue.csv', names=colnames, header=0)
 
