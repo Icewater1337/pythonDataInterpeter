@@ -59,7 +59,7 @@ class PhysiologicalAnalysis:
     def calculateHRVWithFirstTest(self, folder):
         global hrv1
         onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
-        colnames = ['Time', 'IBI']
+        colnames = ['IBI', 'Time']
         for i in onlyfiles:
             if "1IBI" in i:
                 ibi = pd.read_csv(folder + i, names=colnames, header=0)
@@ -151,11 +151,11 @@ class PhysiologicalAnalysis:
                         even = even + 1
                     if epNbr % 2 != 0:
                         uneven = uneven + 1
-                    print("Add EP: " + str(epNbr))
+                    #print("Add EP: " + str(epNbr))
                     normalizedEda1 = (eda1['EDA']- np.min(eda1['EDA'])) / (np.max(eda1['EDA'])-np.min(eda1['EDA']))
                     normalizedEda2 = (eda2['EDA']- np.min(eda2['EDA'])) / (np.max(eda2['EDA'])-np.min(eda2['EDA']))
-                    print("Avg No Light: " + str(np.average(normalizedEda1)))
-                    print("Avg With Light: " + str(np.average(normalizedEda2)))
+                    #print("Avg No Light: " + str(np.average(normalizedEda1)))
+                    #print("Avg With Light: " + str(np.average(normalizedEda2)))
                     eda_no_light.append(np.average((normalizedEda1)))
                     eda_with_light.append(np.average((normalizedEda2)))
 
@@ -195,8 +195,8 @@ class PhysiologicalAnalysis:
                     hrv_with_light.append(hrv2)
 
         # epNbr = "04"
-        print(hrv_no_light)
-        print(hrv_with_light)
+        #print(hrv_no_light)
+        #print(hrv_with_light)
         print("Uneven:" + str(len(hrv_no_light)))
         print("even:" + str(len(hrv_with_light)))
 
@@ -221,8 +221,8 @@ class PhysiologicalAnalysis:
 
 
             if hrv > 0:
-                print("add: " + str(epNbr))
-                print(hrv)
+                #print("add: " + str(epNbr))
+                #print(hrv)
                 if epNbr % 2 == 0:
                     even = even + 1
                     hrv_with_light.append(hrv)
