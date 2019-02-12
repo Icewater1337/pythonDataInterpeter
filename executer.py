@@ -39,6 +39,9 @@ def executePssPlotter():
 # The
 def executePhysiologicalAnalysis():
     physiological_analyzer = PhysiologicalAnalysis(baseFolder, [1, 2, 3, 4, 5, 6, 8, 9, 14, 15, 16, 17])
+    print("Anova on HRV data")
+    print (physiological_analyzer.executeAnovaOnHrv())
+    print("-------------------------------\n")
     # This method executes the ttest only on the first part of the experiment (FIRST MAT)
     print("HRV for only first MAT\n")
     print(physiological_analyzer.useOnlyPartOneFromTestGetHRV())
