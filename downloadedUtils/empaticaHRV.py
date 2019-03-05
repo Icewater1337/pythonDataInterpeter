@@ -75,25 +75,26 @@ def getHRV(data, avg_heart_rate):
     df = pd.DataFrame({'Timestamp': RR_diff_timestamp, 'HRV': RMSSD})
     return df
 
-BVP_DF = pd.read_csv('BVP.csv')
-HR_DF = pd.read_csv('HR.csv')
+    def doNotExecute():
+        BVP_DF = pd.read_csv('BVP.csv')
+        HR_DF = pd.read_csv('HR.csv')
 
-column = list(HR_DF)[0]
-temp = HR_DF.drop(0, axis = 0)
-HR = temp[column]
-HR = HR.tolist()
+        column = list(HR_DF)[0]
+        temp = HR_DF.drop(0, axis = 0)
+        HR = temp[column]
+        HR = HR.tolist()
 
-column2 = list(BVP_DF)[0]
-sample_rate = BVP_DF[column2][0]
-temp = BVP_DF.drop(0, axis = 0)
-temp['spData'] = 0
-temp.loc[temp[column2] > 0, 'spData'] = temp[column2]
-signal = temp['spData'].tolist()
+        column2 = list(BVP_DF)[0]
+        sample_rate = BVP_DF[column2][0]
+        temp = BVP_DF.drop(0, axis = 0)
+        temp['spData'] = 0
+        temp.loc[temp[column2] > 0, 'spData'] = temp[column2]
+        signal = temp['spData'].tolist()
 
-RRI_DF = getRRI(signal, column2, sample_rate)
-HRV_DF = getHRV(RRI_DF, np.mean(HR))
+        RRI_DF = getRRI(signal, column2, sample_rate)
+        HRV_DF = getHRV(RRI_DF, np.mean(HR))
 
-HRV_DF.to_csv('HRV.csv', index=False)
+        HRV_DF.to_csv('HRV.csv', index=False)
 
-print('\n    Done, saved as: HRV.csv\n')
+        print('\n    Done, saved as: HRV.csv\n')
 
