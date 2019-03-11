@@ -18,5 +18,16 @@ def calculateRMSSDFromIbi(ibi):
 
     return rmssd
 
+#
+def calculateSDRRFromIbi(ibi):
+    rmssdSumPart = 0
+    ibi = ibi['IBI']
+
+    meanRR = np.mean(ibi)
+
+    for x in range(ibi.size - 1):
+        rmssdSumPart += (ibi[x] - meanRR) ** 2
+
+    return np.math.sqrt(rmssdSumPart / ((len(ibi) -1 )))
 
 

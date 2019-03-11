@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import ttest_ind, stats
 
-import RMSSDHRVCalc as hrvCalc
+import HRVCalcs as hrvCalc
 from downloadedUtils import empaticaHRV
 
 
@@ -23,7 +23,7 @@ class PhysiologicalAnalysis:
         self.baseFolder = baseFolder
         self.epNbrs = epNbrs
 
-    def calculateHRVforFirstAndSecondIbi(self, folder):
+    def calculateHRVRMSSDforFirstAndSecondIbi(self, folder):
         global hrv1, hrv2
 
         onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
@@ -36,6 +36,22 @@ class PhysiologicalAnalysis:
             if "IBInoLight" in i:
                 ibiNoLight = pd.read_csv(folder + i, names=colnames, header=0)
                 hrv1 = hrvCalc.calculateRMSSDFromIbi(ibiNoLight)
+
+        return hrv1, hrv2
+
+    def calculateHRVSDRRforFirstAndSecondIbi(self, folder):
+        global hrv1, hrv2
+
+        onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+        colnames = ['IBI', 'Time']
+        for i in onlyfiles:
+            if "IBIblue" in i:
+                ibiBlue = pd.read_csv(folder + i, names=colnames, header=0)
+                hrv2 = hrvCalc.calculateSDRRFromIbi(ibiBlue)
+
+            if "IBInoLight" in i:
+                ibiNoLight = pd.read_csv(folder + i, names=colnames, header=0)
+                hrv1 = hrvCalc.calculateSDRRFromIbi(ibiNoLight)
 
         return hrv1, hrv2
 
@@ -157,7 +173,7 @@ class PhysiologicalAnalysis:
 
         return ttest_ind(eda_with_light, eda_no_light)
 
-    def getHRVAvgsAndTTest(self):
+    def getHRVRMSSDAvgsAndTTest(self):
         hrv_no_light = []
         hrv_with_light = []
         # Calculate one ibi
@@ -168,7 +184,7 @@ class PhysiologicalAnalysis:
             baseFolder = self.baseFolder + "empatica_ep_" + str(epNbr).zfill(
                 2) + "/splitParts/"
             # hrv1, hrv2 = calculateHRVforFirstAndSecondIbi(baseFolder)
-            hrv1, hrv2 = self.calculateHRVforFirstAndSecondIbi(baseFolder)
+            hrv1, hrv2 = self.calculateHRVRMSSDforFirstAndSecondIbi(baseFolder)
 
             # Read EDA
 
@@ -193,6 +209,44 @@ class PhysiologicalAnalysis:
         print("Average Without light:" + str(np.average(hrv_no_light)))
 
         return ttest_ind(hrv_no_light, hrv_with_light)
+
+    def getHRVSDRRAvgsAndTTest(self):
+        hrv_no_light = []
+        hrv_with_light = []
+        # Calculate one ibi
+        even = 0
+        uneven = 0
+        for epNbr in self.epNbrs:
+
+            baseFolder = self.baseFolder + "empatica_ep_" + str(epNbr).zfill(
+                2) + "/splitParts/"
+            # hrv1, hrv2 = calculateHRVforFirstAndSecondIbi(baseFolder)
+            hrv1, hrv2 = self.calculateHRVSDRRforFirstAndSecondIbi(baseFolder)
+
+            # Read EDA
+
+            if hrv1 > 0 and hrv2 > 0:
+                # print("add: " + str(epNbr))
+                # print(hrv1)
+                # print(hrv2)
+                if epNbr % 2 == 0:
+                    even = even + 1
+                if epNbr % 2 != 0:
+                    uneven = uneven + 1
+                hrv_no_light.append(hrv1)
+                hrv_with_light.append(hrv2)
+
+        # epNbr = "04"
+        # print(hrv_no_light)
+        # print(hrv_with_light)
+        print("Uneven:" + str(len(hrv_no_light)))
+        print("even:" + str(len(hrv_with_light)))
+
+        print("Average With light:" + str(np.average(hrv_with_light)))
+        print("Average Without light:" + str(np.average(hrv_no_light)))
+
+        return ttest_ind(hrv_no_light, hrv_with_light)
+
 
     # This method only takes the first part of the experiment. The first MAT task.
     def useOnlyPartOneFromTestGetHRV(self):
@@ -236,7 +290,7 @@ class PhysiologicalAnalysis:
             baseFolder = self.baseFolder + "empatica_ep_" + str(epNbr).zfill(
                 2) + "/splitParts/"
             # hrv1, hrv2 = calculateHRVforFirstAndSecondIbi(baseFolder)
-            hrv1, hrv2 = self.calculateHRVforFirstAndSecondIbi(baseFolder)
+            hrv1, hrv2 = self.calculateHRVRMSSDforFirstAndSecondIbi(baseFolder)
 
             # Read EDA
 

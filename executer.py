@@ -51,8 +51,11 @@ def executePhysiologicalAnalysis():
     print(physiological_analyzer.getEDAAvgsAndTTest())
     print("-------------------------------\n")
     # Analysis on HRV
-    print("HRV analysis on full data\n")
-    print(physiological_analyzer.getHRVAvgsAndTTest())
+    print("HRV (RMSSD) analysis on full data\n")
+    print(physiological_analyzer.getHRVRMSSDAvgsAndTTest())
+    print("-------------------------------\n")
+    print("HRV (SDRR) analysis on full data\n")
+    print(physiological_analyzer.getHRVSDRRAvgsAndTTest())
     print("-------------------------------\n")
     # Analysis on Heart Rate
     print("HR Analysis\n")
