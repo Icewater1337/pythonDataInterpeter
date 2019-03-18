@@ -53,8 +53,11 @@ def splitAndSaveToCsv( HR_DF, BVP_DF,timestamp, baseFolder):
 
     second_part = RRI_DF.loc[np.logical_and(RRI_DF['Timestamp'] > timestamp['start_second'],
                                             RRI_DF['Timestamp'] <timestamp['end_second'] )]
+    base_part = RRI_DF.loc[np.logical_and(RRI_DF['Timestamp'] > timestamp['start_base'],
+                                            RRI_DF['Timestamp'] < timestamp['end_base'])]
 
     first_part.to_csv(baseFolder + episode_str + "/splitParts/1IBI" + part1 + ".csv", index=False)
     second_part.to_csv(baseFolder + episode_str + "/splitParts/2IBI"+ part2 + ".csv", index=False)
+    base_part.to_csv(baseFolder + episode_str + "/splitParts/IBIBase.csv", index=False)
 
 

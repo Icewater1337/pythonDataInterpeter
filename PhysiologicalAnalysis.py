@@ -39,6 +39,18 @@ class PhysiologicalAnalysis:
 
         return hrv1, hrv2
 
+    def calculateHRVRMSSDforBaseIbi(self, folder):
+        global  hrv2
+
+        onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+        colnames = ['IBI', 'Time']
+        for i in onlyfiles:
+            if "IBIBase" in i:
+                ibiBlue = pd.read_csv(folder + i, names=colnames, header=0)
+                hrv2 = hrvCalc.calculateRMSSDFromIbi(ibiBlue)
+
+        return hrv2
+
     def calculateHRVSDRRforFirstAndSecondIbi(self, folder):
         global hrv1, hrv2
 
@@ -104,6 +116,15 @@ class PhysiologicalAnalysis:
                 hr1 = pd.read_csv(folder + i, names=colnames, header=0)
         return hr1, hr2
 
+    def getBaseHR(self, folder):
+        global hr2
+        onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+        colnames = ['Time', 'HR']
+        for i in onlyfiles:
+            if "HRbasePart" in i:
+                hr2 = pd.read_csv(folder + i, names=colnames, header=0)
+        return hr2
+
     # This method takes all HR data and creates a T-test with it
     def getHRAvgAndTTest(self):
         hr_no_light = []
@@ -119,16 +140,15 @@ class PhysiologicalAnalysis:
             hr2Avg = np.average(hr2['HR'])
 
             if (hr1Avg > 0 and hr2Avg > 0):
-                if epNbr != 11 and epNbr != 12 and epNbr != 13 and epNbr != 18 and epNbr != 7:
-                    if epNbr % 2 == 0:
-                        even = even + 1
-                    if epNbr % 2 != 0:
-                        uneven = uneven + 1
-                        # print("Add EP: " + str(epNbr))
-                        # print("Avg No Light: " + str(hr1Avg))
-                        # print("Avg With Light: " + str(hr2Avg))
-                    hr_no_light.append(hr1Avg)
-                    hr_with_light.append(hr2Avg)
+                if epNbr % 2 == 0:
+                    even = even + 1
+                if epNbr % 2 != 0:
+                    uneven = uneven + 1
+                    # print("Add EP: " + str(epNbr))
+                    # print("Avg No Light: " + str(hr1Avg))
+                    # print("Avg With Light: " + str(hr2Avg))
+                hr_no_light.append(hr1Avg)
+                hr_with_light.append(hr2Avg)
 
         print("Uneven:" + str(uneven))
         print("even:" + str(even))
@@ -315,3 +335,26 @@ class PhysiologicalAnalysis:
         print("Variance Without light:" + str(np.var(hrv_no_light)))
 
         return stats.f_oneway(hrv_no_light, hrv_with_light)
+
+    def getHRandHRVBaseAvg(self):
+        hr_base = []
+        hrv_base = []
+
+        for epNbr in self.epNbrs:
+            baseFolder = self.baseFolder + "empatica_ep_" + str(epNbr).zfill(
+                2) + "/splitParts/"
+            hr2 = self.getBaseHR(baseFolder)
+            hr2Avg = np.average(hr2['HR'])
+
+            hrv = self.calculateHRVRMSSDforBaseIbi(baseFolder)
+
+            if (hr2Avg > 0):
+                hr_base.append(hr2Avg)
+                hrv_base.append(hrv)
+            print ( "EPisode: "+ str(epNbr) + " Has HR: "+ str(hr2Avg) + " and HRV: " + str(hrv))
+
+
+        print("Average base HR" + str(np.average(hr_base)))
+        print("Average base HR" + str(np.average(hrv_base)))
+
+

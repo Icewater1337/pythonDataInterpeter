@@ -19,7 +19,7 @@ import CreateIBIVersion2
 class PartsSplitter:
     def __init__(self, baseFolder):
         # After this you can chose what plots to create in the main method.
-        columns = ['ep', 'start_first', 'end_first', 'start_second', 'end_second']
+        columns = ['ep', 'start_first', 'end_first', 'start_second', 'end_second', 'start_base', 'end_base']
         self.df_timestamps = pd.DataFrame(columns=columns)
         self.bf = baseFolder
 
@@ -32,12 +32,16 @@ class PartsSplitter:
         start_second_arr = [int(n) for n in row['StartSecond'].split(":")]
         end_second_arr = [int(n) for n in row['EndSecond'].split(":")]
         end_first_arr = [int(n) for n in row['EndFirst'].split(":")]
+        start_base_arr  = [int(n) for n in row['StartBase'].split(":")]
+        end_base_arr = [int(n) for n in row['EndBase'].split(":")]
 
         if 5 < row['EP'] < 13:
             start_first_arr[0] = start_first_arr[0] - 1
             end_first_arr[0] = end_first_arr[0] - 1
             start_second_arr[0] = start_second_arr[0] - 1
             end_second_arr[0] = end_second_arr[0] - 1
+            start_base_arr[0] = start_base_arr[0] - 1
+            end_base_arr[0] = end_base_arr[0] - 1
 
         start_first = current_ep_start.replace(second=int(start_first_arr[2]), minute=int(start_first_arr[1]),
                                                hour=int(start_first_arr[0]))
@@ -50,9 +54,15 @@ class PartsSplitter:
         end_second = current_ep_start.replace(second=int(end_second_arr[2]), minute=int(end_second_arr[1]),
                                               hour=int(end_second_arr[0]))
 
+        start_base = current_ep_start.replace(second=int(start_base_arr[2]), minute=int(start_base_arr[1]),
+                                              hour=int(start_base_arr[0]))
+
+        end_base = current_ep_start.replace(second=int(end_base_arr[2]), minute=int(end_base_arr[1]),
+                                              hour=int(end_base_arr[0]))
+
         self.df_timestamps.loc[row['EP']] = [row['EP'], time.mktime(start_first.timetuple()),
                                              time.mktime(end_first.timetuple()),
-                                             time.mktime(start_second.timetuple()), time.mktime(end_second.timetuple())]
+                                             time.mktime(start_second.timetuple()), time.mktime(end_second.timetuple()),time.mktime(start_base.timetuple()), time.mktime(end_base.timetuple())]
 
         for key, value in current_ep.items():
             part1 = 'blue' if row['EP'] % 2 == 0 else 'noLight'
@@ -65,6 +75,10 @@ class PartsSplitter:
                                                    value.index < time.mktime(end_second.timetuple()))]
             second_part.index.name = "Timestamp"
 
+            base_part = value.loc[np.logical_and(value.index > time.mktime(start_base.timetuple()),
+                                                   value.index < time.mktime(end_base.timetuple()))]
+            base_part.index.name = "Timestamp"
+
             # create folder
             if not os.path.exists(baseFolder + episode + "/splitParts/"):
                 os.makedirs(baseFolder + episode + "/splitParts/")
@@ -73,7 +87,7 @@ class PartsSplitter:
             if key != "IBI":
                 first_part.to_csv(baseFolder + episode + "/splitParts/1" + key + part1 + ".csv", index=True)
                 second_part.to_csv(baseFolder + episode + "/splitParts/2" + key + part2 + ".csv", index=True)
-
+                base_part.to_csv(baseFolder + episode + "/splitParts/" + key + "basePart" + ".csv", index=True)
     # .strftime('%d-%m-%Y %H:%M:%S')
 
     def getAllEmpaticaDataInFolder(self, baseFolder):

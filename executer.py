@@ -38,7 +38,11 @@ def executePssPlotter():
 #This method executes all the t-tests and prints averages.
 # The
 def executePhysiologicalAnalysis():
-    physiological_analyzer = PhysiologicalAnalysis(baseFolder, [1, 2, 3, 4, 5, 6, 8, 9, 14, 15, 16, 17])
+    # Bad EDA: 6,7,10, 12,13,18
+    # Bad HR  -
+    #physiological_analyzer = PhysiologicalAnalysis(baseFolder, [1, 2, 3, 4, 5, 6, 8, 9, 14, 15, 16, 17])
+    physiological_analyzer = PhysiologicalAnalysis(baseFolder, [1, 2, 3, 4, 5, 8, 9, 11, 14, 15, 16, 17])
+    #physiological_analyzer = PhysiologicalAnalysis(baseFolder, [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18])
     print("Anova on HRV data")
     print (physiological_analyzer.executeAnovaOnHrv())
     print("-------------------------------\n")
@@ -54,12 +58,16 @@ def executePhysiologicalAnalysis():
     print("HRV (RMSSD) analysis on full data\n")
     print(physiological_analyzer.getHRVRMSSDAvgsAndTTest())
     print("-------------------------------\n")
-    print("HRV (SDRR) analysis on full data\n")
-    print(physiological_analyzer.getHRVSDRRAvgsAndTTest())
-    print("-------------------------------\n")
+  #  print("HRV (SDRR) analysis on full data\n")
+  #  print(physiological_analyzer.getHRVSDRRAvgsAndTTest())
+  #  print("-------------------------------\n")
     # Analysis on Heart Rate
     print("HR Analysis\n")
     print(physiological_analyzer.getHRAvgAndTTest())
+    print("-------------------------------\n")
+    print("Done")
+    print("Base HR avg and Base HRV agb")
+    physiological_analyzer.getHRandHRVBaseAvg()
     print("-------------------------------\n")
     print("Done")
 
