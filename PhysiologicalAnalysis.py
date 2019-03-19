@@ -165,7 +165,7 @@ class PhysiologicalAnalysis:
         return hr_no_light, hr_with_light, even, uneven
 
     # This method takes the EDA and calculates a t-test on it
-    def getEDAAvgsAndTTest(self):
+    def getEDAAndAvgs(self):
         eda_no_light = []
         eda_with_light = []
         even = 0
@@ -191,13 +191,17 @@ class PhysiologicalAnalysis:
                 eda_no_light.append(np.average((normalizedEda1)))
                 eda_with_light.append(np.average((normalizedEda2)))
 
-        print("Uneven:" + str(uneven))
-        print("even:" + str(even))
 
-        print("Average With light:" + str(np.average(eda_with_light)))
-        print("Average Without light:" + str(np.average(eda_no_light)))
+        return eda_no_light, eda_with_light, even, uneven
 
-        return ttest_ind(eda_with_light, eda_no_light,  equal_var=False)
+    def getEDAValuesAndTTest(self):
+        eda_no_light, eda_with_light, even, uneven = self.getEDAAndAvgs()
+        print("No Light Start:" + str(uneven))
+        print("Blue light start:" + str(even))
+
+        printAvgMeanStdVar(eda_with_light, eda_no_light)
+
+        print(self.calculateTTest(eda_with_light, eda_no_light))
 
     def getHRVRMSSDAvgsAndTTest(self):
         hrv_no_light = []
@@ -232,7 +236,7 @@ class PhysiologicalAnalysis:
 
     #    print(self.calculateTTest(hrv_with_light, hrv_no_light))
 
-        return hrv_no_light, hrv_with_light,even, uneven
+        return hrv_no_light, hrv_with_light, even, uneven
 
     def getHRVSDRRAvgsAndTTest(self):
         hrv_no_light = []
@@ -295,7 +299,7 @@ class PhysiologicalAnalysis:
 
 
     def calculateTTest(self, with_light, no_light):
-        return ttest_ind(with_light, no_light)
+        return ttest_ind(with_light, no_light, equal_var=True)
 
 
 
@@ -347,12 +351,15 @@ class PhysiologicalAnalysis:
                 hrv_base.append(hrv)
             #print ( "EPisode: "+ str(epNbr) + " Has HR: "+ str(hr2Avg) + " and HRV: " + str(hrv))
 
-        hrv_no_light, hrv_with_light,even, uneven = self.getHRVRMSSDAvgsAndTTest()
-        hr_no_light, hr_with_light,even1, uneven1 = self.getHRAvgAndTTest()
-
+        hrv_no_light, hrv_with_light, even, uneven = self.getHRVRMSSDAvgsAndTTest()
+        hr_no_light, hr_with_light, even1, uneven1 = self.getHRAvgAndTTest()
+        print("With light hrv compared to baseline -> high p-value = Good")
         print(self.calculateTTest( hrv_with_light, hrv_base))
+        print("Without light hrv compared to baseline ")
         print(self.calculateTTest( hrv_no_light, hrv_base))
+        print("With light hr compared to baseline ")
         print(self.calculateTTest(hr_with_light, hr_base))
+        print("Without light hr compared to baseline ")
         print(self.calculateTTest(hr_no_light, hr_base))
         printAvgMeanStdVar(hr_base, hrv_base)
 
