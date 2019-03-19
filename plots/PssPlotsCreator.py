@@ -143,6 +143,9 @@ class PssPlotsCreator:
             rects3 = ax.bar(ind + width / 2, after_blue, width,
                             color='Blue', label='After blue light')
 
+
+#        ax.errorbar(yerr=np.std(after_blue), color='#297083', ls='none', lw=2, capthick=2)
+
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax.set_ylabel('#Of people with that score')
         if subset == "all":
@@ -151,6 +154,7 @@ class PssPlotsCreator:
             ax.set_title(type + ' scores comparison of only the first MAT')
         elif subset == "second":
             ax.set_title(type + ' scores comparison of only the second MAT')
+
 
         ax.set_xticks(ind)
         ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
