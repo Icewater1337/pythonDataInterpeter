@@ -85,9 +85,9 @@ class PartsSplitter:
 
         # Save to csv.
             if key != "IBI":
-                first_part.to_csv(baseFolder + episode + "/splitParts/1" + key + part1 + ".csv", index=True)
-                second_part.to_csv(baseFolder + episode + "/splitParts/2" + key + part2 + ".csv", index=True)
-                base_part.to_csv(baseFolder + episode + "/splitParts/" + key + "basePart" + ".csv", index=True)
+                first_part.to_csv(baseFolder + episode + "/splitParts/1" + key + part1 + "std.csv", index=True)
+                second_part.to_csv(baseFolder + episode + "/splitParts/2" + key + part2 + "std.csv", index=True)
+                base_part.to_csv(baseFolder + episode + "/splitParts/" + key + "basePart" + "std.csv", index=True)
     # .strftime('%d-%m-%Y %H:%M:%S')
 
     def getAllEmpaticaDataInFolder(self, baseFolder):

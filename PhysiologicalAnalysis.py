@@ -4,6 +4,7 @@ from os.path import isfile, join
 import numpy as np
 import pandas as pd
 from scipy.stats import ttest_ind, stats
+from scipy.stats import shapiro
 
 import HRVCalcs as hrvCalc
 from downloadedUtils import empaticaHRV
@@ -39,11 +40,11 @@ class PhysiologicalAnalysis:
         onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
         colnames = ['IBI', 'Time']
         for i in onlyfiles:
-            if "IBIblue" in i:
+            if "IBIblue" in i and "std" not in i:
                 ibiBlue = pd.read_csv(folder + i, names=colnames, header=0)
                 hrv2 = hrvCalc.calculateRMSSDFromIbi(ibiBlue)
 
-            if "IBInoLight" in i:
+            if "IBInoLight" in i and "std" not in i:
                 ibiNoLight = pd.read_csv(folder + i, names=colnames, header=0)
                 hrv1 = hrvCalc.calculateRMSSDFromIbi(ibiNoLight)
 
@@ -55,9 +56,21 @@ class PhysiologicalAnalysis:
         onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
         colnames = ['IBI', 'Time']
         for i in onlyfiles:
-            if "IBIBase" in i:
+            if "IBIBase" in i and "std" not in i:
                 ibiBlue = pd.read_csv(folder + i, names=colnames, header=0)
                 hrv2 = hrvCalc.calculateRMSSDFromIbi(ibiBlue)
+
+        return hrv2
+
+    def calculateHRVSDRRforBaseIbi(self, folder):
+        global  hrv2
+
+        onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+        colnames = ['IBI', 'Time']
+        for i in onlyfiles:
+            if "IBIBase" in i  and "std" not in i:
+                ibiBlue = pd.read_csv(folder + i, names=colnames, header=0)
+                hrv2 = hrvCalc.calculateSDRRFromIbi(ibiBlue)
 
         return hrv2
 
@@ -67,11 +80,11 @@ class PhysiologicalAnalysis:
         onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
         colnames = ['IBI', 'Time']
         for i in onlyfiles:
-            if "IBIblue" in i:
+            if "IBIblue" in i  and "std" not in i:
                 ibiBlue = pd.read_csv(folder + i, names=colnames, header=0)
                 hrv2 = hrvCalc.calculateSDRRFromIbi(ibiBlue)
 
-            if "IBInoLight" in i:
+            if "IBInoLight" in i  and "std" not in i:
                 ibiNoLight = pd.read_csv(folder + i, names=colnames, header=0)
                 hrv1 = hrvCalc.calculateSDRRFromIbi(ibiNoLight)
 
@@ -98,6 +111,16 @@ class PhysiologicalAnalysis:
         colnames = ['IBI', 'Time']
         for i in onlyfiles:
             if "1IBI" in i:
+                ibi = pd.read_csv(folder + i, names=colnames, header=0)
+                hrv1 = hrvCalc.calculateRMSSDFromIbi(ibi)
+        return hrv1
+
+    def calculateHRVWithSecondTest(self, folder):
+        global hrv1
+        onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+        colnames = ['IBI', 'Time']
+        for i in onlyfiles:
+            if "2IBI" in i  and "std" not in i:
                 ibi = pd.read_csv(folder + i, names=colnames, header=0)
                 hrv1 = hrvCalc.calculateRMSSDFromIbi(ibi)
         return hrv1
@@ -134,6 +157,17 @@ class PhysiologicalAnalysis:
             if "HRbasePart" in i:
                 hr2 = pd.read_csv(folder + i, names=colnames, header=0)
         return hr2
+
+    def getBaseEda(self, baseFolder):
+        onlyfiles = [f for f in listdir(baseFolder) if isfile(join(baseFolder, f))]
+        colnames = ['Time', 'EDA']
+        for i in onlyfiles:
+            if "EDAbasePart" in i:
+                baseEda = pd.read_csv(baseFolder + i, names=colnames, header=0)
+                baseEda = baseEda[ baseEda.EDA > np.average(baseEda['EDA'])/2]
+                normalizedBaseEda = (baseEda['EDA'] - np.min(baseEda['EDA'])) / (np.max(baseEda['EDA']) - np.min(baseEda['EDA']))
+
+        return normalizedBaseEda
 
     # This method takes all HR data and creates a T-test with it
     def getHRAvgAndTTest(self):
@@ -184,6 +218,10 @@ class PhysiologicalAnalysis:
                 if epNbr % 2 != 0:
                     uneven = uneven + 1
                 # print("Add EP: " + str(epNbr))
+                # remove some outliers, as it is needed with eda
+                eda1 = eda1[eda1.EDA > np.average(eda1['EDA']) / 2]
+                eda2 = eda2[eda2.EDA > np.average(eda2['EDA']) / 2]
+
                 normalizedEda1 = (eda1['EDA'] - np.min(eda1['EDA'])) / (np.max(eda1['EDA']) - np.min(eda1['EDA']))
                 normalizedEda2 = (eda2['EDA'] - np.min(eda2['EDA'])) / (np.max(eda2['EDA']) - np.min(eda2['EDA']))
                 # print("Avg No Light: " + str(np.average(normalizedEda1)))
@@ -196,6 +234,8 @@ class PhysiologicalAnalysis:
 
     def getEDAValuesAndTTest(self):
         eda_no_light, eda_with_light, even, uneven = self.getEDAAndAvgs()
+        print("Hr no light" + str(eda_no_light))
+        print("Hr with light" + str(eda_with_light))
         print("No Light Start:" + str(uneven))
         print("Blue light start:" + str(even))
 
@@ -272,15 +312,18 @@ class PhysiologicalAnalysis:
 
     def getHrvRMSSD(self):
         hrv_no_light, hrv_with_light,even, uneven = self.getHRVRMSSDAvgsAndTTest()
+        print("RMSSD no light" + str(hrv_no_light))
+        print("RMSSD with light" + str(hrv_with_light))
         print("No Light Start:" + str(uneven))
         print("Blue light start:" + str(even))
-
         printAvgMeanStdVar(hrv_with_light, hrv_no_light)
 
         print(self.calculateTTest(hrv_with_light, hrv_no_light))
 
     def getHRVSDRR(self):
         hrv_no_light, hrv_with_light, even, uneven = self.getHRVSDRRAvgsAndTTest()
+        print("SDRR no light" + str(hrv_no_light))
+        print("SDRR with light" + str(hrv_with_light))
         print("No Light Start:" + str(uneven))
         print("Blue light start:" + str(even))
 
@@ -290,6 +333,8 @@ class PhysiologicalAnalysis:
 
     def getHr(self):
         hr_no_light, hr_with_light, even, uneven = self.getHRAvgAndTTest()
+        print("Hr no light" + str(hr_no_light))
+        print("Hr with light" + str(hr_with_light))
         print("No Light Start:" + str(uneven))
         print("Blue light start:" + str(even))
 
@@ -332,11 +377,52 @@ class PhysiologicalAnalysis:
         print("Average With light:" + str(np.average(hrv_with_light)))
         print("Average Without light:" + str(np.average(hrv_no_light)))
 
-        return ttest_ind(hrv_no_light, hrv_with_light)
+        return hrv_no_light, hrv_with_light
+
+
+    def useOnlyPartTwoHRVTTestAVG(self):
+        hrv_no_light = []
+        hrv_with_light = []
+        # Calculate one ibi
+        even = 0
+        uneven = 0
+        for epNbr in self.epNbrs:
+
+            baseFolder = self.baseFolder + "empatica_ep_" + str(epNbr).zfill(
+                2) + "/splitParts/"
+            hrv = self.calculateHRVWithSecondTest(baseFolder)
+
+            if hrv > 0:
+                # print("add: " + str(epNbr))
+                # print(hrv)
+                if epNbr % 2 == 0:
+                    even = even + 1
+                    hrv_with_light.append(hrv)
+                if epNbr % 2 != 0:
+                    uneven = uneven + 1
+                    hrv_no_light.append(hrv)
+
+        print("Uneven:" + str(uneven))
+        print("even:" + str(even))
+
+        print("Average With light:" + str(np.average(hrv_with_light)))
+        print("Average Without light:" + str(np.average(hrv_no_light)))
+
+        return hrv_no_light, hrv_with_light
+
+    def compareFirstAndSecondTest(self):
+        hrv_no_first, hrv_with_first = self.useOnlyPartOneFromTestGetHRV()
+        hrv_no_second, hrv_with_second = self.useOnlyPartTwoHRVTTestAVG()
+
+        print("compare first part no light")
+        print(ttest_ind(hrv_no_first, hrv_with_first))
+        print("compare first part with light")
+        print(ttest_ind(hrv_with_first, hrv_with_second))
 
     def getHRandHRVBaseAvg(self):
         hr_base = []
         hrv_base = []
+        eda_base = []
 
         for epNbr in self.epNbrs:
             baseFolder = self.baseFolder + "empatica_ep_" + str(epNbr).zfill(
@@ -345,14 +431,18 @@ class PhysiologicalAnalysis:
             hr2Avg = np.average(hr2['HR'])
 
             hrv = self.calculateHRVRMSSDforBaseIbi(baseFolder)
+            eda = self.getBaseEda(baseFolder)
+            edaAvg = np.average(eda)
 
             if (hr2Avg > 0):
                 hr_base.append(hr2Avg)
                 hrv_base.append(hrv)
+                eda_base.append(edaAvg)
             #print ( "EPisode: "+ str(epNbr) + " Has HR: "+ str(hr2Avg) + " and HRV: " + str(hrv))
 
         hrv_no_light, hrv_with_light, even, uneven = self.getHRVRMSSDAvgsAndTTest()
         hr_no_light, hr_with_light, even1, uneven1 = self.getHRAvgAndTTest()
+        eda_no_light, eda_with_light, even2, uneen2 = self.getEDAAndAvgs()
         print("With light hrv compared to baseline -> high p-value = Good")
         print(self.calculateTTest( hrv_with_light, hrv_base))
         print("Without light hrv compared to baseline ")
@@ -361,6 +451,15 @@ class PhysiologicalAnalysis:
         print(self.calculateTTest(hr_with_light, hr_base))
         print("Without light hr compared to baseline ")
         print(self.calculateTTest(hr_no_light, hr_base))
-        printAvgMeanStdVar(hr_base, hrv_base)
+        print("With light EDA compared to baseline ")
+        print(self.calculateTTest(eda_with_light, eda_base))
+        print("Without light EDA compared to baseline ")
+        print(self.calculateTTest(eda_no_light, eda_base))
 
+        print("hrv base: " + str((hrv_base)))
+        print("hr base: " + str((hr_base)))
+        print("eda base: " + str((eda_base)))
+        print ("Avg base HR "+ str(np.average(hr_base)))
+        print ("Avg base HRV " + str(np.average(hrv_base)))
+        print ("Avg base EDA " + str(np.average(eda_base)))
 

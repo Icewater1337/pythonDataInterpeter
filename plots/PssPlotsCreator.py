@@ -189,8 +189,8 @@ class PssPlotsCreator:
         labels_helpful = Counter(helpful).keys()
         values_calming = Counter(calming).values()
         values_helpful = Counter(helpful).values()
-        colors_calming = ['lightcoral', 'blue', 'red', 'grey']
-        colors_helpful = ['blue', 'red', 'grey']
+        colors_calming = ['green', 'blue', 'red']
+        colors_helpful = ['green', 'blue', 'red']
 
         # Plot 1
         plt.pie(values_calming, labels=labels_calming, colors=colors_calming,
@@ -210,6 +210,8 @@ class PssPlotsCreator:
     #Creates a plot of all experiment data and plots the three averages
     def createAveragesPlot(self):
         # Create averages plot
+        self.after_blue_light_df, self.after_no_light_df = self.getSubsetOfDf("second")
+
         zz = [1, 2, 3]
 
         ind = np.arange(0, 2 * len(zz), 2)  # the x locations for the groups
@@ -233,12 +235,46 @@ class PssPlotsCreator:
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
         ax_avg.set_ylabel('Average score over all participants')
-        ax_avg.set_title('Average scores for stress, tension and concentration')
+        ax_avg.set_title('Average for all participants for the second mental arithmetic task')
         ax_avg.set_xticks(ind)
         ax_avg.set_xticklabels(('Stress', 'Tension', 'Concentration'))
         ax_avg.legend()
 
         plt.savefig(self.baseFolder + "averagePlot.png")  # Preload things
+
+    def createMedianPlot(self):
+        self.after_blue_light_df, self.after_no_light_df = self.getSubsetOfDf("second")
+
+        # Create averages plot
+        zz = [1, 2, 3]
+
+        ind = np.arange(0, 2 * len(zz), 2)  # the x locations for the groups
+        width = 0.5  # the width of the bars
+
+        avgs_before = [np.median(self.before_df['stress']), np.median(self.before_df['tension']),
+                       np.median(self.before_df['concentration'])]
+        avgs_after_no = [np.median(self.after_no_light_df['stress']), np.median(self.after_no_light_df['tension']),
+                         np.median(self.after_no_light_df['concentration'])]
+        avgs_after_blue = [np.median(self.after_blue_light_df['stress']), np.median(
+            self.after_blue_light_df['tension']),
+                           np.median(self.after_blue_light_df['concentration'])]
+
+        fig_avg, ax_avg = plt.subplots()
+        avg_rects1 = ax_avg.bar(ind - width, avgs_before, width,
+                                color='Grey', label='Before')
+        avg_rects2 = ax_avg.bar(ind, avgs_after_no, width,
+                                color='Red', label='After No light')
+        avg_rects3 = ax_avg.bar(ind + width, avgs_after_blue, width,
+                                color='Blue', label='After blue light')
+
+        # Add some text for labels, title and custom x-axis tick labels, etc.
+        ax_avg.set_ylabel('Median score over all participants')
+        ax_avg.set_title('Median for all participants for the second mental arithmetic task')
+        ax_avg.set_xticks(ind)
+        ax_avg.set_xticklabels(('Stress', 'Tension', 'Concentration'))
+        ax_avg.legend()
+
+        plt.savefig(self.baseFolder + "medianPlot.png")  # Preload things
 
 
 
