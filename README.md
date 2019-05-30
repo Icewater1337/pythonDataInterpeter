@@ -1,6 +1,10 @@
 # pythonDataInterpeter
-Toolbox for the data interpretation
+Toolbox for the data interpretation.
+It makes use of : https://github.com/Jegama/empaticaHRV
+
 # How to use
+First the code was not designed to be used except for myself. This is why it might cause some problems. If you have problems, feel free to contact me.
+
 - All the code is executed from executer.py. No other class is needed.
 - executer.py also contains description of what does what
 - For the plot methods, the parts of the pss are needed as csv files. Downloaded and split into the specific parts. Also see PssPlotsCreater.py for more info
