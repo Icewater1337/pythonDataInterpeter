@@ -438,7 +438,6 @@ class PhysiologicalAnalysis:
                 hr_base.append(hr2Avg)
                 hrv_base.append(hrv)
                 eda_base.append(edaAvg)
-            #print ( "EPisode: "+ str(epNbr) + " Has HR: "+ str(hr2Avg) + " and HRV: " + str(hrv))
 
         hrv_no_light, hrv_with_light, even, uneven = self.getHRVRMSSDAvgsAndTTest()
         hr_no_light, hr_with_light, even1, uneven1 = self.getHRAvgAndTTest()
@@ -462,4 +461,48 @@ class PhysiologicalAnalysis:
         print ("Avg base HR "+ str(np.average(hr_base)))
         print ("Avg base HRV " + str(np.average(hrv_base)))
         print ("Avg base EDA " + str(np.average(eda_base)))
+
+
+    def getBaseValues(self):
+        hr_base = []
+        rmssd_base = []
+        sdrr_base = []
+        eda_base = []
+
+        for epNbr in self.epNbrs:
+            baseFolder = self.baseFolder + "empatica_ep_" + str(epNbr).zfill(
+                2) + "/splitParts/"
+            hr2 = self.getBaseHR(baseFolder)
+            hr2Avg = np.average(hr2['HR'])
+
+            rmssd = self.calculateHRVRMSSDforBaseIbi(baseFolder)
+            sdrr = self.calculateHRVSDRRforBaseIbi(baseFolder)
+            eda = self.getBaseEda(baseFolder)
+            edaAvg = np.average(eda)
+
+            hr_base.append(hr2Avg)
+            rmssd_base.append(rmssd)
+            sdrr_base.append(sdrr)
+            eda_base.append(edaAvg)
+
+        return rmssd_base, sdrr_base, hr_base, eda_base
+
+    def getAllData(self):
+        rmssd_base, sdrr_base, hr_base, eda_base = self.getBaseValues()
+
+        rmssd_no_light, rmssd_with_light, even, uneven = self.getHRVRMSSDAvgsAndTTest()
+        sdrr_no_light, sdrr_with_light, even, uneven = self.getHRVSDRRAvgsAndTTest()
+        hr_no_light, hr_with_light, even1, uneven1 = self.getHRAvgAndTTest()
+        eda_no_light, eda_with_light, even2, uneen2 = self.getEDAAndAvgs()
+
+        print("rmssd: --------------------")
+        print(rmssd_base)
+        print(rmssd_no_light)
+        print(rmssd_with_light)
+        print("sdrr: --------------")
+        print(sdrr_base)
+        print(sdrr_no_light)
+        print(sdrr_with_light)
+
+
 

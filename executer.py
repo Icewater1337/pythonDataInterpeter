@@ -43,31 +43,32 @@ def executePssPlotter():
 def executePhysiologicalAnalysis():
     # Bad EDA: 6,7,10, 12,13,18
     # Bad HR  -
-    #epNbrs = [1, 2, 3, 4, 5,6,7, 8, 9, 11,12,13, 14, 15, 16, 17,18]
-    epNbrs = [1, 2, 3, 4, 5, 8, 9, 11, 14, 15, 16, 17]
+    epNbrs = [1, 2, 3, 4, 5,6,7, 8, 9, 11,12,13, 14, 15, 16, 17,18]
+    #epNbrs = [1, 2, 3, 4, 5, 8, 9, 11, 14, 15, 16, 17]
 
     physiological_analyzer = PhysiologicalAnalysis(baseFolder, epNbrs)
-    print("HRV (RMSSD) analysis on full data\n")
-    print(physiological_analyzer.getHrvRMSSD())
-    print("-------------------------------\n")
-    print("HRV (SDRR) analysis on full data\n")
-    print(physiological_analyzer.getHRVSDRR())
-    print("-------------------------------\n")
+    physiological_analyzer.getAllData()
+    #print("HRV (RMSSD) analysis on full data\n")
+    #print(physiological_analyzer.getHrvRMSSD())
+    #print("-------------------------------\n")
+    #print("HRV (SDRR) analysis on full data\n")
+    #print(physiological_analyzer.getHRVSDRR())
+    #print("-------------------------------\n")
 
     #Analysis on Heart Rate
-    print("HR Analysis\n")
-    print(physiological_analyzer.getHr())
-    print("-------------------------------\n")
-    print("Base HR avg and Base HRV agb")
-    physiological_analyzer.getHRandHRVBaseAvg()
-    print("-------------------------------\n")
-    print("EDA Analysis\n")
-    print(physiological_analyzer.getEDAValuesAndTTest())
-    print("-------------------------------\n")
-    print("HRV comparisons first second\n")
-    print(physiological_analyzer.compareFirstAndSecondTest())
-    print("-------------------------------\n")
-    print("Done")
+    #print("HR Analysis\n")
+    #print(physiological_analyzer.getHr())
+    #print("-------------------------------\n")
+    #print("Base HR avg and Base HRV agb")
+    #physiological_analyzer.getHRandHRVBaseAvg()
+    #print("-------------------------------\n")
+    #print("EDA Analysis\n")
+    #print(physiological_analyzer.getEDAValuesAndTTest())
+    #print("-------------------------------\n")
+    #print("HRV comparisons first second\n")
+    #print(physiological_analyzer.compareFirstAndSecondTest())
+    #print("-------------------------------\n")
+    #print("Done")
 
     # unevenNbrs = [k for k in epNbrs if k % 2]
     # permutationLength = 1
